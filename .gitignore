@@ -8,6 +8,8 @@ __pycache__/
 .idea/
 # Distribution / packaging
 .Python
+*.lnk
+*.symlink
 output
 tigerbot-7b-sft
 tigerbot-7b-sft/
