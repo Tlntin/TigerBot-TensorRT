@@ -5,9 +5,12 @@ __pycache__/
 
 # C extensions
 *.so
-
+.idea/
 # Distribution / packaging
 .Python
+output
+tigerbot-7b-sft
+tigerbot-7b-sft/
 build/
 develop-eggs/
 dist/
