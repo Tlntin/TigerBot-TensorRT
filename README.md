@@ -65,6 +65,14 @@ polygraphy inspect model output/onnx_output/tigerbot-7b-sft-fp32/decoder_model.o
 ```bash
 polygraphy inspect model output/onnx_output/tigerbot-7b-sft-fp32/decoder_with_past_model.onnx
 ```
+- 验证非past_key版模型能否转TensorRT
+```bash
+polygraphy inspect capability output/onnx_output/tigerbot-7b-sft-fp32/decoder_model.onnx 
+```
+- 验证past_key版模型能否转TensorRT
+```bash
+polygraphy inspect capability output/onnx_output/tigerbot-7b-sft-fp32/decoder_with_past_model.onnx
+```
 
 ### 第二步 检查onnx
 ##### 对于CPU

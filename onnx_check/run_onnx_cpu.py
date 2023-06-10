@@ -11,7 +11,7 @@ onnx_output_dir = os.path.join(output_dir, "onnx_output")
 onnx_model_dir = os.path.join(onnx_output_dir, "tigerbot-7b-sft-fp32")
 onnx_model_path1 = os.path.join(onnx_model_dir, "decoder_model.onnx")
 onnx_model_path2 = os.path.join(onnx_model_dir, "decoder_with_past_model.onnx")
-new_onnx_dir = os.path.join(project_dir, "output", "new_onnx_output_fp32")
+new_onnx_dir = os.path.join(onnx_output_dir, "new_onnx_output_fp32")
 if not os.path.exists(new_onnx_dir):
     os.mkdir(new_onnx_dir)
 
