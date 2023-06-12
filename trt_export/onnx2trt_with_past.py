@@ -14,6 +14,8 @@ batch_size = 1
 use_time_cache = True
 max_length = 512
 opt_length = max_length // 2
+gen_max_length = 1024
+gen_opt_length = gen_max_length // 2
 # if use force use fp16, may reduce the accuracy and memory usage
 force_use_fp16 = False
 # default 3, max 5, 5 is the best but need more GPU memory and time
@@ -79,27 +81,40 @@ if not os.path.exists(model_dir):
     os.mkdir(model_dir)
 onnx_output_dir = os.path.join(output_dir, "onnx_output")
 onnx_model_dir = os.path.join(onnx_output_dir, "tigerbot-7b-sft-fp32")
-onnx_model_path = os.path.join(onnx_model_dir, "decoder_model.onnx")
+onnx_model_path = os.path.join(onnx_model_dir, "decoder_with_past_model.onnx")
 time_cache_dir = os.path.join(output_dir, "time_cache")
 if not os.path.exists(time_cache_dir):
     os.mkdir(time_cache_dir)
-time_cache_path = os.path.join(time_cache_dir, "time_cache_no_past.cache")
-tensorrt_engine_path = os.path.join(model_dir, f"TigerBot_bs{batch_size}_no_past.plan")
+time_cache_path = os.path.join(time_cache_dir, "time_cache_with_past.cache")
+tensorrt_engine_path = os.path.join(model_dir, f"TigerBot_bs{batch_size}_with_past.plan")
 builder = trt.Builder(MyLogger())
 config = builder.create_builder_config()
 profile = builder.create_optimization_profile()
 profile.set_shape(
     "input_ids",
     (1, 1),
-    (batch_size, opt_length),
-    (batch_size, max_length),
+    (batch_size, 1),
+    (batch_size, 1),
 )
 profile.set_shape(
     "attention_mask",
     (1, 1),
-    (batch_size, opt_length),
-    (batch_size, max_length),
+    (batch_size, 1),
+    (batch_size, 1),
 )
+for i in range(30):
+    profile.set_shape(
+        f"past_key_values.{i}.key",
+        (1 * 32, 128, 1),
+        (batch_size * 32, 128, gen_opt_length - 1),
+        (batch_size * 32, 128, gen_max_length - 1),
+    )
+    profile.set_shape(
+        f"past_key_values.{i}.value",
+        (1 * 32, 1, 128),
+        (batch_size * 32, gen_opt_length - 1, 128),
+        (batch_size * 32, gen_max_length - 1, 128),
+    )
 config.add_optimization_profile(profile)
 # use fp16
 config.flags = config.flags | (1 << int(trt.BuilderFlag.FP16))

@@ -85,11 +85,42 @@ python3 onnx_check/export_example.py
 python3 onnx_check/run_onnx_cpu.py
 ```
 
+### 第三步 将onnx转成TensorRT
+##### 转no_past版onnx
+- 利用trtexec命令，将不带past_key的onnx转TensorRT。
+```bash
+trtexec \
+--onnx=./output/onnx_output/tigerbot-7b-sft-fp32/decoder_model.onnx \
+--saveEngine=./output/models/TigerBot_bs1_no_past.plan \
+--timingCacheFile=./output/time_cache/time_cache_no_past.cache \
+--fp16 \
+--noTF32 \
+--minShapes=input_ids:1x1,attention_mask:1x1 \
+--optShapes=input_ids:1x256,attention_mask:1x256 \
+--maxShapes=input_ids:1x512,attention_mask:1x512 \
+--verbose > trt_no_past.log 2>&1 
+```
+- 也可以用python api来转
+```bash
+python3 trt_export/onnx2trt_no_past.py
+```
+
+##### 转with_past版onnx
+- 利用trtexec命令，将带past_key的onnx文件转成TensorRT(命令有点长，暂时先不写了)
+```bash
+
+```
+
+- 也可以用python api来转
+```bash
+python3 trt_export/onnx2trt_with_past.py
+```
+
 
 ### 待完成
 - [x] onnx导出
 - [x] onnx对齐(包含CPU/CUDA推理+数据精度对比)
-- [ ] onnx转TensorRT(fp16/int8)
-- [ ] TensorRT对齐
+- [x] onnx转TensorRT(fp16/int8)
+- [ ] TensorRT对齐(推理数据精度对比)
 - [ ] 推理Demo
 - [ ] TensorRT+FastTransformer双重加速
