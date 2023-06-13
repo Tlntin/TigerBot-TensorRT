@@ -117,6 +117,13 @@ python3 trt_export/onnx2trt_with_past.py
 ```
 
 
+### 第四步，TensorRT数据对齐
+1. 先尝试对no_past版做对齐，观察数据误差结果（实测目前误差极大，fp16下误差接近0.5，可见TensorRT没有对bloom大模型做优化，等官方更新再说）
+```bash
+python3 trt_export/trt_check_no_past.py
+```
+
+
 ### 待完成
 - [x] onnx导出
 - [x] onnx对齐(包含CPU/CUDA推理+数据精度对比)
